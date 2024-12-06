@@ -81,8 +81,6 @@ async function fetchChallengeWithPuppeteer(year: number, day: number): Promise<C
     const html = await page.content();
     const challenges = await extractChallenges(html);
 
-    console.log('Challenges returned:', challenges);
-
     await page.close();
 
     if (challenges.length === 0) {
