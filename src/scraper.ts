@@ -36,31 +36,22 @@ async function extractChallenges(html: string): Promise<Challenge[]> {
 
   const description = descriptionParts.join('\n\n');
 
-  console.log('Starting code extraction from view-lines');
   const code = $('.view-line').map((_, line) => {
     const spans = $(line).find('span span');
-    console.log('Found spans:', spans.length);
     const lineText = spans.map((_, span) => {
       const text = $(span).text();
-      console.log('Span text:', text);
       return text;
     }).get();
-    console.log('Line texts array:', lineText);
     const joinedLine = lineText.join('').trim();
-    console.log('Joined and trimmed line:', joinedLine);
     return joinedLine;
   }).get();
-  console.log('Raw code lines:', code);
   const filteredCode = code.filter(line => line);
-  console.log('Filtered code lines:', filteredCode);
   const finalCode = filteredCode.join('\n');
-  console.log('Final formatted code:', finalCode);
 
   if (description && finalCode) {
     challenges.push({ description, code: finalCode });
   }
 
-  console.log('Final challenges array:', challenges);
   return challenges;
 }
 
@@ -139,8 +130,6 @@ async function saveChallenge(year: number, day: number, content: Challenge | nul
       '',
     ].join('\n');
 
-    console.log('Original code:', content.code);
-
     // Remove zero-width spaces and other unwanted characters
     const cleanedCode = content.code
       .replace(/\u200B/g, "")
@@ -149,7 +138,6 @@ async function saveChallenge(year: number, day: number, content: Challenge | nul
       .replace(/\uFEFF/g, "")
       .replace(/\u00A0/g, " ");
 
-    console.log('Cleaned code:', cleanedCode);
 
     await writeFile(path.join(srcDir, 'main.rs'), cleanedCode, { encoding: 'utf8', mode: 0o644 });
 
