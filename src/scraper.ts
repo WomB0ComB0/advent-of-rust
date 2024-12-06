@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import { mkdir, writeFile, rm } from 'fs/promises';
+import { mkdir, writeFile, rm, readdir, stat } from 'fs/promises';
 import path from 'path';
 import puppeteer from 'puppeteer';
 import { $ } from 'bun'
@@ -13,6 +13,43 @@ class ScraperError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'ScraperError';
+  }
+}
+
+async function updateWorkspaceMembers(year: number) {
+  const baseDir = path.join(process.cwd(), year.toString());
+  const rootCargoTomlPath = path.join(process.cwd(), 'Cargo.toml');
+
+  try {
+    const directories = await readdir(baseDir);
+    const validMembers: string[] = [];
+
+    for (const dir of directories) {
+      const dirPath = path.join(baseDir, dir);
+      const cargoTomlPath = path.join(dirPath, 'Cargo.toml');
+
+      try {
+        const stats = await stat(cargoTomlPath);
+        if (stats.isFile()) {
+          validMembers.push(`"${year}/${dir}"`);
+        }
+      } catch {}
+      finally {
+        console.log(`Checked ${dirPath}`);
+      }
+    }
+
+    const cargoTomlContent = [
+      '[workspace]',
+      'members = [',
+      validMembers.join(',\n  '),
+      ']',
+    ].join('\n');
+
+    await writeFile(rootCargoTomlPath, cargoTomlContent, { encoding: 'utf8' });
+    console.log('Updated Cargo.toml with current project members.');
+  } catch (error) {
+    console.error('Failed to update workspace members:', error);
   }
 }
 
@@ -156,7 +193,22 @@ async function saveChallenge(year: number, day: number, content: Challenge | nul
       console.log(`Formatted code in ${baseDir}`);
     }
 
-    console.log(`Challenge for day ${day} saved successfully`);
+    try {
+      await $`cargo clean --manifest-path ${path.join(baseDir, 'Cargo.toml')}`;
+      await $`cargo build --manifest-path ${path.join(baseDir, 'Cargo.toml')}`;
+    } catch (error) {
+      console.error(`Error building project in ${baseDir}: ${error}`);
+    } finally {
+      console.log(`Built project in ${baseDir}`);
+    }
+
+    try {
+      await updateWorkspaceMembers(year);
+    } catch (error) {
+      console.error('Failed to update workspace members:', error);
+    } finally {
+      console.log(`Challenge for day ${day} saved successfully`);
+    }
   } catch (error) {
     console.error('Challenge save failed:', error);
     throw error;

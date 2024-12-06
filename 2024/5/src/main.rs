@@ -15,7 +15,11 @@ impl Kid {
         // 🎅 Expected CSV: "Name,GoodDeeds,BadDeeds"
         //    Example: "Alice,3,1" -> name: "Alice", good_deeds: 3, bad_deeds: 1
         // 🎁 Your code here! 🎁
-        Ok(Self::new(name, good_deeds, bad_deeds))
+        let mut csv_row = csv_row.split(",");
+        let name = csv_row.next().ok_or("missing name")?;
+        let good_deeds = csv_row.next().ok_or("missing good deeds")?.parse().map_err(|_| "can't parse good deeds")?;
+        let bad_deeds = csv_row.next().ok_or("missing bad deeds")?.parse().map_err(|_| "can't parse bad deeds")?;
+        Ok(Self::new(name.to_string(), good_deeds, bad_deeds))
     }
     pub fn new(name: String, good_deeds: u32, bad_deeds: u32) -> Self {
         let niceness = if Self::is_nice(good_deeds, bad_deeds) {
@@ -26,12 +30,10 @@ impl Kid {
         Self { name, niceness }
     }
     pub fn is_nice(good_deeds: u32, bad_deeds: u32) -> bool {
-        if good_deeds == 0 && bad_deeds == 0 {
-            return false;
-        }
-        let good_deeds = good_deeds as f32 * GOOD_WEIGHT;
-        let bad_deeds = bad_deeds as f32 * BAD_WEIGHT;
-        let ratio = good_deeds / (good_deeds + bad_deeds);
-        ratio >= 0.75
+        100*good_deeds >= 75*(good_deeds+2*bad_deeds) && good_deeds>0
     }
+}
+
+pub fn main() {
+    println!("{}", Kid::is_nice(10, 2));
 }

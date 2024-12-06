@@ -8,4 +8,14 @@ pub fn is_nice(good_deeds: u32, bad_deeds: u32) -> bool {
     // e.g. 10 good deeds and 2 bad deeds =
     // (10 * 1) / ((10 * 1) + (2 * 2)) = 10 / 14 = 0.714... (not nice)
     // If both good and bad deeds are 0, the child is naughty
+    if good_deeds == 0 && bad_deeds == 0 {
+        return false;
+    } else {
+        let ratio = good_deeds as f64 / (good_deeds as f64 + (2.0 * bad_deeds as f64));
+        ratio >= 0.75
+    }
+}
+
+pub fn main() {
+    println!("{}", is_nice(10, 2));
 }
