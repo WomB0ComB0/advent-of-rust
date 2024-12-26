@@ -20,12 +20,12 @@ impl Kid {
             true => Niceness::Nice(good_deeds),
             false => Niceness::Naughty,
         };
-        Kid { name, niceness}
+        Kid { name, niceness }
     }
     // Move yesterday's function to an associated function in the struct
-pub fn is_nice(good_deeds: u32, bad_deeds: u32) -> bool {
-    100*good_deeds >= 75*(1*good_deeds+2*bad_deeds) && good_deeds > 0
-}
+    pub fn is_nice(good_deeds: u32, bad_deeds: u32) -> bool {
+        100 * good_deeds >= 75 * (1 * good_deeds + 2 * bad_deeds) && good_deeds > 0
+    }
 }
 
 pub fn main() {

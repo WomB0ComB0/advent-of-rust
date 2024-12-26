@@ -29,7 +29,7 @@
 pub fn longer_wish<'a>(s1: &'a str, s2: &'a str) -> Option<&'a str> {
     let s1_trimmed = s1.trim();
     let s2_trimmed = s2.trim();
-    
+
     let s1_chars = s1_trimmed.chars().count();
     let s2_chars = s2_trimmed.chars().count();
 
@@ -45,7 +45,7 @@ pub fn longer_wish<'a>(s1: &'a str, s2: &'a str) -> Option<&'a str> {
 /// Example usage of the longer_wish function
 fn main() {
     let s1 = "hello";
-    let s2 = "world"; 
+    let s2 = "world";
     let longer = longer_wish(s1, s2);
     println!("{:?}", longer);
 }

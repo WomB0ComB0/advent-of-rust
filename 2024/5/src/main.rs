@@ -17,8 +17,16 @@ impl Kid {
         // 🎁 Your code here! 🎁
         let mut csv_row = csv_row.split(",");
         let name = csv_row.next().ok_or("missing name")?;
-        let good_deeds = csv_row.next().ok_or("missing good deeds")?.parse().map_err(|_| "can't parse good deeds")?;
-        let bad_deeds = csv_row.next().ok_or("missing bad deeds")?.parse().map_err(|_| "can't parse bad deeds")?;
+        let good_deeds = csv_row
+            .next()
+            .ok_or("missing good deeds")?
+            .parse()
+            .map_err(|_| "can't parse good deeds")?;
+        let bad_deeds = csv_row
+            .next()
+            .ok_or("missing bad deeds")?
+            .parse()
+            .map_err(|_| "can't parse bad deeds")?;
         Ok(Self::new(name.to_string(), good_deeds, bad_deeds))
     }
     pub fn new(name: String, good_deeds: u32, bad_deeds: u32) -> Self {
@@ -30,7 +38,7 @@ impl Kid {
         Self { name, niceness }
     }
     pub fn is_nice(good_deeds: u32, bad_deeds: u32) -> bool {
-        100*good_deeds >= 75*(good_deeds+2*bad_deeds) && good_deeds>0
+        100 * good_deeds >= 75 * (good_deeds + 2 * bad_deeds) && good_deeds > 0
     }
 }
 
